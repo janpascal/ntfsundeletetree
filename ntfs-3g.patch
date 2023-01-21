@@ -1,0 +1,28 @@
+--- ntfs-3g-2017.3.23AR.3.orig/ntfsprogs/ntfsundelete.c
++++ ntfs-3g-2017.3.23AR.3/ntfsprogs/ntfsundelete.c
+@@ -1024,6 +1024,7 @@ static void get_parent_name(struct filen
+ 		ntfs_log_perror("ERROR: Couldn't open $MFT/$DATA");
+ 	} else {
+ 		inode_num = MREF_LE(name->parent_mref);
++                name->parent_inode = inode_num;
+ 
+ 		if (ntfs_attr_pread(mft_data, vol->mft_record_size * inode_num,
+ 					vol->mft_record_size, rec) < 1) {
+@@ -1601,6 +1602,7 @@ static void dump_record(struct ufile *fi
+ 		if (opts.parent) {
+ 			ntfs_log_quiet("Parent: %s\n", f->parent_name ?
+ 				f->parent_name : "<non-determined>");
++			ntfs_log_quiet("Parent inode: %lld\n", f->parent_inode);
+ 		}
+ 
+ 		ntfs_log_quiet("Size alloc: %lld\n", f->size_alloc);
+--- ntfs-3g-2017.3.23AR.3.orig/ntfsprogs/ntfsundelete.h
++++ ntfs-3g-2017.3.23AR.3/ntfsprogs/ntfsundelete.h
+@@ -76,6 +76,7 @@ struct filename {
+ 	FILE_NAME_TYPE_FLAGS name_space;
+ 	leMFT_REF	 parent_mref;
+ 	char		*parent_name;
++	long long        parent_inode;
+ };
+ 
+ struct data {
